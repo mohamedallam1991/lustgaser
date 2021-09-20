@@ -152,7 +152,7 @@ class ProductsTest extends TestCase
 
 
     /** @test */
-    public function it_can_update_an_author_from_a_resource_object()
+    public function it_can_update_an_product_from_a_resource_object()
     {
         $user = User::factory()->create();
         Sanctum::actingAs($user);
@@ -206,5 +206,6 @@ class ProductsTest extends TestCase
             'title' => $product->title,
         ]);
     }
+
 
 }
