@@ -156,7 +156,7 @@ class ProductsTest extends TestCase
     {
         $user = User::factory()->create();
         Sanctum::actingAs($user);
-        $product = Product::factory()->create();
+        Product::factory()->create();
 
         $response = $this->patchJson('/api/v1/products/1', [
             'data' => [
@@ -185,6 +185,25 @@ class ProductsTest extends TestCase
         $this->assertDatabaseHas('products', [
             'id' => 1,
             'title' => 'Jane Doe',
+        ]);
+    }
+
+    /** @test */
+    public function it_can_delete_a_product_through_a_delete_request()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        $product = Product::factory()->create();
+
+        $response = $this->delete('/api/v1/products/1', [], [
+            'Accept' => 'application/vnd.api+json',
+            'Content-Type' => 'application/vnd.api+json',
+        ])
+        ->assertStatus(204);
+
+        $this->assertDatabaseMissing('products', [
+            'id' => 1,
+            'title' => $product->title,
         ]);
     }
 
