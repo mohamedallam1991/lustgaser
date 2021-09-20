@@ -22,7 +22,10 @@ class ProductsTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $this->getJson('/api/v1/products/1')
+        $this->getJson('/api/v1/products/1', [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
+        ])
              ->assertStatus(200)
              ->assertJson([
                 "data" => [
@@ -46,7 +49,10 @@ class ProductsTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $response = $this->get('/api/v1/products');
+        $response = $this->get('/api/v1/products', [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
+        ]);
         $response->assertStatus(200);
 
         // // dd($response->decodeResponseJson()['data'][0]['data']);
@@ -125,8 +131,14 @@ class ProductsTest extends TestCase
                 'attributes' => [
                     'title' => 'John Doe',
                 ]
+                ],
+
+            ],
+            [
+                'accept' => 'application/vnd.api+json',
+                'content-type' => 'application/vnd.api+json',
             ]
-        ]);
+        );
 
         $response->assertStatus(201)
 
@@ -166,7 +178,11 @@ class ProductsTest extends TestCase
                     'title' => 'Jane Doe',
                 ]
             ]
-        ]);
+                ],
+                [
+                    'accept' => 'application/vnd.api+json',
+                    'content-type' => 'application/vnd.api+json',
+                ]);
 
         $response
         ->assertStatus(200)
@@ -198,8 +214,13 @@ class ProductsTest extends TestCase
         $response = $this->delete('/api/v1/products/1', [], [
             'Accept' => 'application/vnd.api+json',
             'Content-Type' => 'application/vnd.api+json',
-        ])
-        ->assertStatus(204);
+        ],
+        [
+                'accept' => 'application/vnd.api+json',
+                'content-type' => 'application/vnd.api+json',
+            ]
+        );
+        $response->assertStatus(204);
 
         $this->assertDatabaseMissing('products', [
             'id' => 1,

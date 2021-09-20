@@ -28,6 +28,9 @@ class UpdateProductRequestTest extends TestCase
                     'title' => 'Jane Doe',
                 ]
             ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
         ]);
 
         $response
@@ -55,6 +58,9 @@ class UpdateProductRequestTest extends TestCase
                     'title' => 'Jane Doe',
                 ]
             ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
         ]);
 
         $response
@@ -82,6 +88,9 @@ class UpdateProductRequestTest extends TestCase
                     'title' => 'Jane Doe',
                 ]
             ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
         ]);
 
         $response
@@ -109,6 +118,9 @@ class UpdateProductRequestTest extends TestCase
                     'title' => 'Jane Doe',
                 ]
             ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
         ]);
 
         $response
@@ -134,6 +146,9 @@ class UpdateProductRequestTest extends TestCase
                 'type' => 'products',
 
             ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
         ]);
 
         $response
@@ -160,6 +175,9 @@ class UpdateProductRequestTest extends TestCase
                 'attributes' => 'not object'
 
             ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
         ]);
 
         $response
@@ -187,6 +205,9 @@ class UpdateProductRequestTest extends TestCase
                     'title' => 123,
                 ]
             ]
+        ], [
+            'accept' => 'application/vnd.api+json',
+            'content-type' => 'application/vnd.api+json',
         ]);
 
         $response
