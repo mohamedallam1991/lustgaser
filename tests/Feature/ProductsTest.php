@@ -26,7 +26,7 @@ class ProductsTest extends TestCase
              ->assertStatus(200)
              ->assertJson([
                 "data" => [
-                    "id" => 1,
+                    "id" => '1',
                     "type" => "products",
                     "attributes" => [
                         'title' => $product->title,
@@ -61,21 +61,21 @@ class ProductsTest extends TestCase
             $json->has('data')
                  ->has('data', 3)
                  ->has('data.0.data', fn ($json) =>
-                    $json->where('id', 1)
+                    $json->where('id', '1')
                         ->where('type', 'products')
                          ->where('attributes.title', $product->title)
                          ->where('attributes.created_at', $product->created_at->toJSON())
                          ->where('attributes.updated_at', $product->updated_at->toJSON())
                  )
                  ->has('data.1.data', fn ($json) =>
-                 $json->where('id', 2)
+                 $json->where('id', '2')
                       ->where('type', 'products')
                       ->where('attributes.title', $product1->title)
                       ->where('attributes.created_at', $product1->created_at->toJSON())
                       ->where('attributes.updated_at', $product1->updated_at->toJSON())
               )
                  ->has('data.2.data', fn ($json) =>
-                 $json->where('id', 3)
+                 $json->where('id', '3')
                       ->where('type', 'products')
                       ->where('attributes.title', $product2->title)
                       ->where('attributes.created_at', $product2->created_at->toJSON())
@@ -89,21 +89,21 @@ class ProductsTest extends TestCase
             $json->has('data')
                  ->has('data', 3)
                  ->has('data.0.data', fn ($json) =>
-                    $json->where('id', 1)
+                    $json->where('id', '1')
                         ->where('type', 'products')
                          ->where('attributes.title', $products[0]->title)
                          ->where('attributes.created_at', $products[0]->created_at->toJSON())
                          ->where('attributes.updated_at', $products[0]->updated_at->toJSON())
                  )
                  ->has('data.1.data', fn ($json) =>
-                 $json->where('id', 2)
+                 $json->where('id', '2')
                       ->where('type', 'products')
                       ->where('attributes.title', $products[1]->title)
                       ->where('attributes.created_at', $products[1]->created_at->toJSON())
                       ->where('attributes.updated_at', $products[1]->updated_at->toJSON())
               )
                  ->has('data.2.data', fn ($json) =>
-                 $json->where('id', 3)
+                 $json->where('id', '3')
                       ->where('type', 'products')
                       ->where('attributes.title', $products[2]->title)
                       ->where('attributes.created_at', $products[2]->created_at->toJSON())
@@ -132,7 +132,7 @@ class ProductsTest extends TestCase
 
              ->assertJson([
                 "data" => [
-                    "id" => 1,
+                    "id" => '1',
                     "type" => "products",
                     "attributes" => [
                         'title' => 'John Doe',
@@ -147,6 +147,44 @@ class ProductsTest extends TestCase
         $this->assertDatabaseHas('products', [
             'id' => 1,
             'title' => 'John Doe'
+        ]);
+    }
+
+
+    /** @test */
+    public function it_can_update_an_author_from_a_resource_object()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user);
+        $product = Product::factory()->create();
+
+        $response = $this->patchJson('/api/v1/products/1', [
+            'data' => [
+                'id' => '1',
+                'type' => 'products',
+                'attributes' => [
+                    'title' => 'Jane Doe',
+                ]
+            ]
+        ]);
+
+        $response
+        ->assertStatus(200)
+        ->assertJson([
+            "data" => [
+                "id" => '1',
+                "type" => "products",
+                "attributes" => [
+                    'title' => 'Jane Doe',
+                    'created_at' => now()->setMilliseconds(0)->toJSON(),
+                    'updated_at' => now() ->setMilliseconds(0)->toJSON(),
+                ]
+            ]
+        ]);
+
+        $this->assertDatabaseHas('products', [
+            'id' => 1,
+            'title' => 'Jane Doe',
         ]);
     }
 

@@ -26,7 +26,11 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function(){
     // Products
     // do we pull product by id? product:id?
     // Route::apiResource('authors', AuthorsController::class);
-    Route::get('/products', [ProductsController::class, 'index']);
-    Route::post('/products', [ProductsController::class, 'store']);
-    Route::get('/products/{product}', [ProductsController::class, 'show']);
+    // Route::get('/products', [ProductsController::class, 'index']);
+    // // Route::get('/products', [ProductsController::class, 'update']);
+    // Route::post('/products', [ProductsController::class, 'store']);
+    // Route::get('/products/{product}', [ProductsController::class, 'show']);
+
+    Route::apiResource('products', ProductsController::class);
+
 });
