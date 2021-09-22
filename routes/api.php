@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->prefix('v1')->group(function(){
         return $request->user();
     });
 
+    // 321 page for exceptiong handling
     // Products
     // do we pull product by id? product:id?
     // Route::apiResource('authors', AuthorsController::class);

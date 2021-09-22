@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Product;
 use Laravel\Sanctum\Sanctum;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Testing\Fluent\AssertableJson;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class CreatePorductRequestTest extends TestCase
@@ -174,6 +175,24 @@ class CreatePorductRequestTest extends TestCase
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.attributes.title']);
+        $response->assertJson([
+            "message" => "The given data was invalid.",
+            "errors" => [
+            "data.attributes.title" => [
+                "The data.attributes.title must be a string.",
+                ],
+            ],
+        ]);
+
+        $this->assertEquals('The data.attributes.title must be a string.',$response->decodeResponseJson()['errors']['data.attributes.title'][0]);
+
+        $response->assertJson(
+            fn (AssertableJson $json) =>
+            $json->has('message')
+                 ->has('errors', 1)
+                //  ->has('errors.data.attributes.title.0')
+                );
+
 
 
         $this->assertDatabaseMissing('products', [

@@ -43,9 +43,8 @@ class ProductsTest extends TestCase
     /** @test */
     public function it_returns_all_products_as_a_collection_of_resource_objects()
     {
-        $product = Product::factory()->create();
-        $product1 = Product::factory()->create();
-        $product2 = Product::factory()->create();
+        [$product, $product1, $product2] = Product::factory()->count(3)->create();
+
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
@@ -154,6 +153,7 @@ class ProductsTest extends TestCase
                 'content-type' => 'application/vnd.api+json',
             ]
         );
+
 
         $response->assertStatus(201)
 
