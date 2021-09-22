@@ -13,148 +13,161 @@ class UpdateProductRequestTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function setUp():void
+    {
+        parent::setUp();
+        Sanctum::actingAs(User::factory()->create());
+        $this->product = Product::factory()->create();
+    }
 
 
+
+    public function sendPatchWithHeaders($arrayOfData)
+    {
+        return $this->patchJson(
+            '/api/v1/products/1', $arrayOfData,[
+                'accept' => 'application/vnd.api+json',
+                'content-type' => 'application/vnd.api+json',
+            ]);
+    }
     // // Domain: project177.convey1.cloud
     // | Username: proj177
     // | Password: N2SKV2H4GXuzt8cRQP
     // CPANEL: https://server.vevisto.com/cpanel
     /** @test */
-    public function it_validates_product_id_is_required()
-    {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-        $product = Product::factory()->create();
 
-        $response = $this->patchJson('/api/v1/products/1', [
-            'data' => [
-                'type' => 'products',
-                'attributes' => [
+
+    /** @test */
+    public function it_can_update_an_product_from_a_resource_object()
+    {
+        $response = $this->sendPatchWithHeaders(
+                      [
+                        'data' => [
+                            'id' => '1',
+                            'type' => 'products',
+                            'attributes' => [
+                                'title' => 'Jane Doe',
+                            ]
+                        ]
+                    ]
+                );
+
+        $response
+        ->assertStatus(200)
+        ->assertJson([
+            "data" => [
+                "id" => '1',
+                "type" => "products",
+                "attributes" => [
                     'title' => 'Jane Doe',
+                    'created_at' => now()->setMilliseconds(0)->toJSON(),
+                    'updated_at' => now() ->setMilliseconds(0)->toJSON(),
                 ]
             ]
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
         ]);
+
+        $this->assertSame('Jane Doe', Product::first()->title);
+    }
+
+
+    public function it_validates_product_id_is_required()
+    {
+        $response = $this->sendPatchWithHeaders(
+            [
+                'data' => [
+                    'type' => 'products',
+                    'attributes' => [
+                        'title' => 'Jane Doe',
+                    ]
+                ]
+            ]
+        );
 
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.id']);
 
-        $this->assertDatabaseHas('products', [
-            'id' => 1,
-            'title' => $product->title,
-        ]);
+        $this->assertSame($this->product->title, Product::first()->title);
     }
 
     /** @test */
     public function it_validates_product_id_is_string()
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-        $product = Product::factory()->create();
-
-        $response = $this->patchJson('/api/v1/products/1', [
-            'data' => [
-                'id' => 1,
-                'type' => 'products',
-                'attributes' => [
-                    'title' => 'Jane Doe',
+        $response = $this->sendPatchWithHeaders(
+            [
+                'data' => [
+                    'id' => 1,
+                    'type' => 'products',
+                    'attributes' => [
+                        'title' => 'Jane Doe',
+                    ]
                 ]
             ]
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ]);
+        );
 
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.id']);
 
-        $this->assertDatabaseHas('products', [
-            'id' => 1,
-            'title' => $product->title,
-        ]);
+        $this->assertSame($this->product->title, Product::first()->title);
     }
 
     /** @test */
     public function it_validates_product_type_is_given()
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-        $product = Product::factory()->create();
-
-        $response = $this->patchJson('/api/v1/products/1', [
-            'data' => [
-                'id' => '1',
-                'type' => '',
-                'attributes' => [
-                    'title' => 'Jane Doe',
+        $response = $this->sendPatchWithHeaders(
+            [
+                'data' => [
+                    'id' => '1',
+                    'type' => '',
+                    'attributes' => [
+                        'title' => 'Jane Doe',
+                    ]
                 ]
             ]
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ]);
+        );
 
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.type']);
 
-        $this->assertDatabaseHas('products', [
-            'id' => 1,
-            'title' => $product->title,
-        ]);
+        $this->assertSame($this->product->title, Product::first()->title);
     }
 
     /** @test */
     public function it_validates_products_type_is_given_in_plural()
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-        $product = Product::factory()->create();
-
-        $response = $this->patchJson('/api/v1/products/1', [
-            'data' => [
-                'id' => '1',
-                'type' => 'product',
-                'attributes' => [
-                    'title' => 'Jane Doe',
+        $response = $this->sendPatchWithHeaders(
+            [
+                'data' => [
+                    'id' => '1',
+                    'type' => 'product',
+                    'attributes' => [
+                        'title' => 'Jane Doe',
+                    ]
                 ]
             ]
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ]);
+        );
 
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.type']);
 
-        $this->assertDatabaseHas('products', [
-            'id' => 1,
-            'title' => $product->title,
-        ]);
+        $this->assertSame($this->product->title, Product::first()->title);
     }
 
     /** @test */
     public function it_validates_attributes_are_given_in_product()
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-        $product = Product::factory()->create();
+        $response = $this->sendPatchWithHeaders(
+            [
+                'data' => [
+                    'id' => '1',
+                    'type' => 'products',
 
-        $response = $this->patchJson('/api/v1/products/1', [
-            'data' => [
-                'id' => '1',
-                'type' => 'products',
-
+                ]
             ]
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ]);
+        );
 
         $response
         ->assertStatus(422)
@@ -162,66 +175,53 @@ class UpdateProductRequestTest extends TestCase
 
         $this->assertDatabaseHas('products', [
             'id' => 1,
-            'title' => $product->title,
+            'title' => $this->product->title,
         ]);
     }
 
     /** @test */
     public function it_validates_attributes_is_given_in_product()
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-        $product = Product::factory()->create();
+        $response = $this->sendPatchWithHeaders(
+             [
+                'data' => [
+                    'id' => '1',
+                    'type' => 'products',
+                    'attributes' => 'not object'
 
-        $response = $this->patchJson('/api/v1/products/1', [
-            'data' => [
-                'id' => '1',
-                'type' => 'products',
-                'attributes' => 'not object'
-
+                ]
             ]
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ]);
+        );
 
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.attributes']);
 
-        $this->assertDatabaseHas('products', [
-            'id' => 1,
-            'title' => $product->title,
-        ]);
+        $this->assertSame($this->product->title, Product::first()->title);
     }
 
     /** @test */
     public function it_validates_title_is_string()
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-        $product = Product::factory()->create();
-
-        $response = $this->patchJson('/api/v1/products/1', [
-            'data' => [
-                'id' => '1',
-                'type' => 'products',
-                'attributes' => [
-                    'title' => 123,
+        $response = $this->sendPatchWithHeaders(
+            [
+                'data' => [
+                    'id' => '1',
+                    'type' => 'products',
+                    'attributes' => [
+                        'title' => 123,
+                    ]
                 ]
             ]
-        ], [
-            'accept' => 'application/vnd.api+json',
-            'content-type' => 'application/vnd.api+json',
-        ]);
+        );
 
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.attributes.title']);
 
-        $this->assertDatabaseHas('products', [
-            'id' => 1,
-            'title' => $product->title,
-        ]);
+        $this->assertSame($this->product->title, Product::first()->title);
     }
+
+
+
 }

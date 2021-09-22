@@ -15,12 +15,16 @@ class ProductsTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function setUp():void
+    {
+        parent::setUp();
+        Sanctum::actingAs(User::factory()->create());
+    }
+
     /** @test */
     public function it_returns_a_product_as_a_resource_object()
     {
         $product = Product::factory()->create();
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
 
         $this->getJson('/api/v1/products/1', [
             'accept' => 'application/vnd.api+json',
@@ -44,9 +48,6 @@ class ProductsTest extends TestCase
     public function it_returns_all_products_as_a_collection_of_resource_objects()
     {
         [$product, $product1, $product2] = Product::factory()->count(3)->create();
-
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
 
         $response = $this->get('/api/v1/products', [
             'accept' => 'application/vnd.api+json',
@@ -134,9 +135,6 @@ class ProductsTest extends TestCase
     /** @test */
     public function it_can_create_a_product_from_a_resource_object()
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-
         $response = $this->postJson(
             '/api/v1/products',
             [
@@ -178,55 +176,10 @@ class ProductsTest extends TestCase
     }
 
 
-    /** @test */
-    public function it_can_update_an_product_from_a_resource_object()
-    {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
-        Product::factory()->create();
-
-        $response = $this->patchJson(
-            '/api/v1/products/1',
-            [
-            'data' => [
-                'id' => '1',
-                'type' => 'products',
-                'attributes' => [
-                    'title' => 'Jane Doe',
-                ]
-            ]
-                ],
-            [
-                    'accept' => 'application/vnd.api+json',
-                    'content-type' => 'application/vnd.api+json',
-                ]
-        );
-
-        $response
-        ->assertStatus(200)
-        ->assertJson([
-            "data" => [
-                "id" => '1',
-                "type" => "products",
-                "attributes" => [
-                    'title' => 'Jane Doe',
-                    'created_at' => now()->setMilliseconds(0)->toJSON(),
-                    'updated_at' => now() ->setMilliseconds(0)->toJSON(),
-                ]
-            ]
-        ]);
-
-        $this->assertDatabaseHas('products', [
-            'id' => 1,
-            'title' => 'Jane Doe',
-        ]);
-    }
 
     /** @test */
     public function it_can_delete_a_product_through_a_delete_request()
     {
-        $user = User::factory()->create();
-        Sanctum::actingAs($user);
         $product = Product::factory()->create();
 
         $response = $this->delete(
