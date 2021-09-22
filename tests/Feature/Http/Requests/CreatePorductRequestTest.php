@@ -388,7 +388,4 @@ class CreatePorductRequestTest extends TestCase
             'title' => $product->title,
         ]);
     }
-
-
-
 }

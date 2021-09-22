@@ -14,6 +14,11 @@ class UpdateProductRequestTest extends TestCase
     use RefreshDatabase;
 
 
+
+    // // Domain: project177.convey1.cloud
+    // | Username: proj177
+    // | Password: N2SKV2H4GXuzt8cRQP
+    // CPANEL: https://server.vevisto.com/cpanel
     /** @test */
     public function it_validates_product_id_is_required()
     {
@@ -219,5 +224,4 @@ class UpdateProductRequestTest extends TestCase
             'title' => $product->title,
         ]);
     }
-
 }

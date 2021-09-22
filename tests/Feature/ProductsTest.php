@@ -63,60 +63,73 @@ class ProductsTest extends TestCase
         // $this->assertEquals($product2->title,$response->decodeResponseJson()['data'][2]['data']['attributes']['title']);
 
         $response
-        ->assertJson(fn (AssertableJson $json) =>
+        ->assertJson(
+            fn (AssertableJson $json) =>
             $json->has('data')
                  ->has('data', 3)
-                 ->has('data.0.data', fn ($json) =>
+                 ->has(
+                     'data.0.data',
+                     fn ($json) =>
                     $json->where('id', '1')
                         ->where('type', 'products')
                          ->where('attributes.title', $product->title)
                          ->where('attributes.created_at', $product->created_at->toJSON())
                          ->where('attributes.updated_at', $product->updated_at->toJSON())
                  )
-                 ->has('data.1.data', fn ($json) =>
+                 ->has(
+                     'data.1.data',
+                     fn ($json) =>
                  $json->where('id', '2')
                       ->where('type', 'products')
                       ->where('attributes.title', $product1->title)
                       ->where('attributes.created_at', $product1->created_at->toJSON())
                       ->where('attributes.updated_at', $product1->updated_at->toJSON())
-              )
-                 ->has('data.2.data', fn ($json) =>
+                 )
+                 ->has(
+                     'data.2.data',
+                     fn ($json) =>
                  $json->where('id', '3')
                       ->where('type', 'products')
                       ->where('attributes.title', $product2->title)
                       ->where('attributes.created_at', $product2->created_at->toJSON())
                       ->where('attributes.updated_at', $product2->updated_at->toJSON())
-              )
+                 )
         );
 
         $products = Product::all();
         $response
-        ->assertJson(fn (AssertableJson $json) =>
+        ->assertJson(
+            fn (AssertableJson $json) =>
             $json->has('data')
                  ->has('data', 3)
-                 ->has('data.0.data', fn ($json) =>
+                 ->has(
+                     'data.0.data',
+                     fn ($json) =>
                     $json->where('id', '1')
                         ->where('type', 'products')
                          ->where('attributes.title', $products[0]->title)
                          ->where('attributes.created_at', $products[0]->created_at->toJSON())
                          ->where('attributes.updated_at', $products[0]->updated_at->toJSON())
                  )
-                 ->has('data.1.data', fn ($json) =>
+                 ->has(
+                     'data.1.data',
+                     fn ($json) =>
                  $json->where('id', '2')
                       ->where('type', 'products')
                       ->where('attributes.title', $products[1]->title)
                       ->where('attributes.created_at', $products[1]->created_at->toJSON())
                       ->where('attributes.updated_at', $products[1]->updated_at->toJSON())
-              )
-                 ->has('data.2.data', fn ($json) =>
+                 )
+                 ->has(
+                     'data.2.data',
+                     fn ($json) =>
                  $json->where('id', '3')
                       ->where('type', 'products')
                       ->where('attributes.title', $products[2]->title)
                       ->where('attributes.created_at', $products[2]->created_at->toJSON())
                       ->where('attributes.updated_at', $products[2]->updated_at->toJSON())
-              )
+                 )
         );
-
     }
 
     /** @test */
@@ -125,7 +138,9 @@ class ProductsTest extends TestCase
         $user = User::factory()->create();
         Sanctum::actingAs($user);
 
-        $response = $this->postJson('/api/v1/products', [
+        $response = $this->postJson(
+            '/api/v1/products',
+            [
             'data' => [
                 'type' => 'products',
                 'attributes' => [
@@ -170,7 +185,9 @@ class ProductsTest extends TestCase
         Sanctum::actingAs($user);
         Product::factory()->create();
 
-        $response = $this->patchJson('/api/v1/products/1', [
+        $response = $this->patchJson(
+            '/api/v1/products/1',
+            [
             'data' => [
                 'id' => '1',
                 'type' => 'products',
@@ -179,10 +196,11 @@ class ProductsTest extends TestCase
                 ]
             ]
                 ],
-                [
+            [
                     'accept' => 'application/vnd.api+json',
                     'content-type' => 'application/vnd.api+json',
-                ]);
+                ]
+        );
 
         $response
         ->assertStatus(200)
@@ -211,11 +229,14 @@ class ProductsTest extends TestCase
         Sanctum::actingAs($user);
         $product = Product::factory()->create();
 
-        $response = $this->delete('/api/v1/products/1', [], [
+        $response = $this->delete(
+            '/api/v1/products/1',
+            [],
+            [
             'Accept' => 'application/vnd.api+json',
             'Content-Type' => 'application/vnd.api+json',
         ],
-        [
+            [
                 'accept' => 'application/vnd.api+json',
                 'content-type' => 'application/vnd.api+json',
             ]
@@ -227,6 +248,4 @@ class ProductsTest extends TestCase
             'title' => $product->title,
         ]);
     }
-
-
 }
