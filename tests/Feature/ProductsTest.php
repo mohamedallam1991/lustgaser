@@ -26,7 +26,7 @@ class ProductsTest extends TestCase
     {
         $product = Product::factory()->create();
 
-        $this->getJson('/api/v1/products/1', [
+        $response = $this->getJson('/api/v1/products/1', [
             'accept' => 'application/vnd.api+json',
             'content-type' => 'application/vnd.api+json',
         ])
@@ -42,6 +42,22 @@ class ProductsTest extends TestCase
                     ]
                 ]
         ]);
+
+        $response->assertJson(fn (AssertableJson $json) =>
+            $json->has('data',
+                fn ($json) =>
+                $json->where('id', '1')
+                    ->where('type', 'products')
+                    ->has('attributes',
+                            fn ($json) =>
+                        $json->where('title', $product->title)
+                            ->where('created_at', $product->created_at->toJSON())
+                            ->where('updated_at', $product->updated_at->toJSON())
+                    )
+            )
+         );
+
+
     }
 
     /** @test */

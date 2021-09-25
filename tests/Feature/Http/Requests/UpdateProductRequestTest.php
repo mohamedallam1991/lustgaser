@@ -6,7 +6,6 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Product;
 use Laravel\Sanctum\Sanctum;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class UpdateProductRequestTest extends TestCase
@@ -69,7 +68,7 @@ class UpdateProductRequestTest extends TestCase
         $this->assertSame('Jane Doe', Product::first()->title);
     }
 
-
+    /** @test */
     public function it_validates_product_id_is_required()
     {
         $response = $this->sendPatchWithHeaders(
@@ -86,6 +85,7 @@ class UpdateProductRequestTest extends TestCase
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.id']);
+        $this->mustBe($response, 'data.id', 'required');
 
         $this->assertSame($this->product->title, Product::first()->title);
     }
@@ -108,12 +108,13 @@ class UpdateProductRequestTest extends TestCase
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.id']);
+        $this->mustBe($response, 'data.id', 'string');
 
         $this->assertSame($this->product->title, Product::first()->title);
     }
 
     /** @test */
-    public function it_validates_product_type_is_given()
+    public function it_validates_product_type_is_required()
     {
         $response = $this->sendPatchWithHeaders(
             [
@@ -130,12 +131,13 @@ class UpdateProductRequestTest extends TestCase
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.type']);
+        $this->mustBe($response, 'data.type', 'required');
 
         $this->assertSame($this->product->title, Product::first()->title);
     }
 
     /** @test */
-    public function it_validates_products_type_is_given_in_plural()
+    public function it_validates_products_type_is_given_is_valid()
     {
         $response = $this->sendPatchWithHeaders(
             [
@@ -152,12 +154,13 @@ class UpdateProductRequestTest extends TestCase
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.type']);
+        $this->mustBe($response, 'data.type', 'invalid');
 
         $this->assertSame($this->product->title, Product::first()->title);
     }
 
     /** @test */
-    public function it_validates_attributes_are_given_in_product()
+    public function it_validates_data_attributes_is_required()
     {
         $response = $this->sendPatchWithHeaders(
             [
@@ -172,15 +175,13 @@ class UpdateProductRequestTest extends TestCase
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.attributes']);
+        $this->mustBe($response, 'data.attributes', 'required');
 
-        $this->assertDatabaseHas('products', [
-            'id' => 1,
-            'title' => $this->product->title,
-        ]);
+        $this->assertSame($this->product->title, Product::first()->title);
     }
 
     /** @test */
-    public function it_validates_attributes_is_given_in_product()
+    public function it_validates_attributes_is_array()
     {
         $response = $this->sendPatchWithHeaders(
              [
@@ -196,6 +197,7 @@ class UpdateProductRequestTest extends TestCase
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.attributes']);
+        $this->mustBe($response, 'data.attributes', 'array');
 
         $this->assertSame($this->product->title, Product::first()->title);
     }
@@ -218,6 +220,7 @@ class UpdateProductRequestTest extends TestCase
         $response
         ->assertStatus(422)
         ->assertJsonValidationErrors(['data.attributes.title']);
+        $this->mustBe($response, 'data.attributes.title', 'string');
 
         $this->assertSame($this->product->title, Product::first()->title);
     }
