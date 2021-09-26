@@ -208,7 +208,6 @@ class CreatePorductRequestTest extends TestCase
                     )
         );
 
-        // dd('done');
         $response->assertJson([
             "message" => "The given data was invalid.",
             "errors" => [
@@ -229,6 +228,7 @@ class CreatePorductRequestTest extends TestCase
 
         $this->assertFalse(Product::whereTitle('John Doe')->exists());
     }
+
 
 
 }

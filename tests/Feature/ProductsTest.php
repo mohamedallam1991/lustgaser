@@ -217,4 +217,5 @@ class ProductsTest extends TestCase
             'title' => $product->title,
         ]);
     }
+
 }
